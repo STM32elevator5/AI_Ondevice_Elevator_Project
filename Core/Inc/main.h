@@ -26,40 +26,40 @@
 extern "C" {
 #endif
 
-  /* Includes ------------------------------------------------------------------*/
-  #include "stm32f4xx_hal.h"
+/* Includes ------------------------------------------------------------------*/
+#include "stm32f4xx_hal.h"
 
-  /* Private includes ----------------------------------------------------------*/
-  /* USER CODE BEGIN Includes */
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 
-  /* USER CODE END Includes */
+/* USER CODE END Includes */
 
-  /* Exported types ------------------------------------------------------------*/
-  /* USER CODE BEGIN ET */
+/* Exported types ------------------------------------------------------------*/
+/* USER CODE BEGIN ET */
 
-  /* USER CODE END ET */
+/* USER CODE END ET */
 
-  /* Exported constants --------------------------------------------------------*/
-  /* USER CODE BEGIN EC */
+/* Exported constants --------------------------------------------------------*/
+/* USER CODE BEGIN EC */
 
-  /* USER CODE END EC */
+/* USER CODE END EC */
 
-  /* Exported macro ------------------------------------------------------------*/
-  /* USER CODE BEGIN EM */
+/* Exported macro ------------------------------------------------------------*/
+/* USER CODE BEGIN EM */
 
-  /* USER CODE END EM */
+/* USER CODE END EM */
 
-  /* Exported functions prototypes ---------------------------------------------*/
-  void Error_Handler(void);
+/* Exported functions prototypes ---------------------------------------------*/
+void Error_Handler(void);
 
-  /* USER CODE BEGIN EFP */
+/* USER CODE BEGIN EFP */
 
 //  extern uint8_t currentFloor = 0;
 //  extern uint8_t nextFloor = 0;
 
-  /* USER CODE END EFP */
+/* USER CODE END EFP */
 
-  /* Private defines -----------------------------------------------------------*/
+/* Private defines -----------------------------------------------------------*/
 #define STEP_OUTPUT0_Pin GPIO_PIN_0
 #define STEP_OUTPUT0_GPIO_Port GPIOA
 #define STEP_OUTPUT1_Pin GPIO_PIN_1
@@ -74,6 +74,7 @@ extern "C" {
 #define LED_OUTPUT2_GPIO_Port GPIOA
 #define EXIT_2F_Pin GPIO_PIN_5
 #define EXIT_2F_GPIO_Port GPIOC
+#define EXIT_2F_EXTI_IRQn EXTI9_5_IRQn
 #define STEP_OUTPUT3_Pin GPIO_PIN_0
 #define STEP_OUTPUT3_GPIO_Port GPIOB
 #define FND_OUTPUT4_Pin GPIO_PIN_1
@@ -92,10 +93,12 @@ extern "C" {
 #define FND_OUTPUT5_GPIO_Port GPIOB
 #define EXIT_1F_Pin GPIO_PIN_6
 #define EXIT_1F_GPIO_Port GPIOC
+#define EXIT_1F_EXTI_IRQn EXTI9_5_IRQn
 #define LED_OUTPUT4_Pin GPIO_PIN_7
 #define LED_OUTPUT4_GPIO_Port GPIOC
 #define EXIT_0F_Pin GPIO_PIN_8
 #define EXIT_0F_GPIO_Port GPIOC
+#define EXIT_0F_EXTI_IRQn EXTI9_5_IRQn
 #define LED_OUTPUT6_Pin GPIO_PIN_8
 #define LED_OUTPUT6_GPIO_Port GPIOA
 #define LED_OUTPUT5_Pin GPIO_PIN_9
@@ -115,9 +118,9 @@ extern "C" {
 #define LED_OUTPUT3_Pin GPIO_PIN_6
 #define LED_OUTPUT3_GPIO_Port GPIOB
 
-  /* USER CODE BEGIN Private defines */
+/* USER CODE BEGIN Private defines */
 
-  /* USER CODE END Private defines */
+/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

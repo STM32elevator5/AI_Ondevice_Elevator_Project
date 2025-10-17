@@ -35,9 +35,9 @@
 /* USER CODE BEGIN PTD */
 
 typedef enum {
-    MOTOR_STOP,
-    MOTOR_CW,
-    MOTOR_CCW
+  MOTOR_STOP,
+  MOTOR_CW,
+  MOTOR_CCW
 } MotorState;
 
 /* USER CODE END PTD */
@@ -69,44 +69,92 @@ const uint32_t stepDelay = 1;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  switch(GPIO_Pin){
+    case GPIO_PIN_5:  // PC5
+      // PC5 처리
+      break;
+    case GPIO_PIN_6:  // PC6
+      // PC6 처리
+      break;
+    case GPIO_PIN_8:  // PC8
+      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+      break;
+    default:
+      break;
+  }
+}
+
 uint32_t millis()
 {
   return HAL_GetTick();
 }
 
-//static inline void onButton(uint8_t floor)
-//{
-//  switch (floor) {
-//    case 0:
-////      if(nextFloor > currentFloor)
-////	{
-////	  // 위로 올라가는 이벤트
-////	  currentFloor = nextFloor;
-////	}
-////      else if(nextFloor < currentFloor){
-////	  // 내려가는 이벤트
-////      }
-////      ledOn(8);
-////      ledLeftShift(8);
-////      FND_ShowDigit(1);
-//      motorState = MOTOR_CW;
-//      motorStepCount = 0;
-//      lastStepTime = HAL_GetTick();
-//      break;
-//    case 1:
-////      ledRightShift(0);
-////      FND_ShowDigit(2);
-//      motorState = MOTOR_CCW;
-//      motorStepCount = 0;
-//      lastStepTime = HAL_GetTick();
-//      break;
-//    case 2:
-////      FND_ShowDigit(3);
-//      motorState = MOTOR_STOP;
-//      stopStepper();
-//      break;
-//  }
-//}
+static inline void onButton(uint8_t floor)
+{
+  switch (floor) {
+    case 0:
+      //      if(nextFloor > currentFloor)
+      //	{
+      //	  // 위로 올라가는 이벤트
+      //	  currentFloor = nextFloor;
+      //	}
+      //      else if(nextFloor < currentFloor){
+      //	  // 내려가는 이벤트
+      //      }
+      //      ledOn(8);
+      //      ledLeftShift(8);
+      //      FND_ShowDigit(1);
+      motorState = MOTOR_CW;
+      motorStepCount = 0;
+      lastStepTime = HAL_GetTick();
+      break;
+    case 1:
+      //      ledRightShift(0);
+      //      FND_ShowDigit(2);
+      motorState = MOTOR_CCW;
+      motorStepCount = 0;
+      lastStepTime = HAL_GetTick();
+      break;
+    case 2:
+      //      FND_ShowDigit(3);
+      motorState = MOTOR_STOP;
+      stopStepper();
+      break;
+  }
+}
+
+static inline void processMotorTick(uint32_t now)
+{
+  if(motorState == MOTOR_STOP) return;
+  if(now - lastStepTime < stepDelay) return;
+
+  if(motorState == MOTOR_CW) {
+      stepMotorOneStep(DIR_CW);
+  } else { // MOTOR_CCW
+      stepMotorOneStep(DIR_CCW);
+  }
+
+  motorStepCount++;                    // ← 스텝 후 증가(0에서 즉시 %0 되는 문제 방지)
+
+  if((motorStepCount % stepsPerRevolution) == 0) {
+      if(motorState == MOTOR_CW) {
+	  ledRightShift(0);
+	  FND_ShowDigit(2);
+      } else {
+	  ledLeftShift(8);
+	  FND_ShowDigit(3);
+      }
+  }
+
+  lastStepTime = now;
+
+  if(motorStepCount >= stepsPerRevolution) {
+      motorState = MOTOR_STOP;
+      stopStepper();
+  }
+}
 
 /* USER CODE END PFP */
 
@@ -116,9 +164,9 @@ uint32_t millis()
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
 
@@ -153,84 +201,37 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
     {
-      if(buttonGetPressed(0))
-      {
-          motorState = MOTOR_CW;
-          motorStepCount = 0;
-          lastStepTime = HAL_GetTick();
-      }
-      else if(buttonGetPressed(1))
-      {
-          motorState = MOTOR_CCW;
-          motorStepCount = 0;
-          lastStepTime = HAL_GetTick();
-      }
-      else if(buttonGetPressed(2))
-      {
-          motorState = MOTOR_STOP;
-          stopStepper();
+      for(uint8_t i=0; i<3; ++i) {
+	  if(buttonGetPressed(i)) onButton(i);
       }
 
-      // 논블로킹 모터 스텝 처리
-      if(motorState != MOTOR_STOP)
-      {
-        if(HAL_GetTick() - lastStepTime >= stepDelay)
-        {
-          if(motorState == MOTOR_CW)
-          {
-            stepMotorOneStep(DIR_CW);
-            if (motorStepCount % 4096 == 0)
-              ledRightShift(0);
-          }
+      // 모터 논블로킹 스텝
+      uint32_t now = HAL_GetTick();
+      processMotorTick(now);
+    /* USER CODE END WHILE */
 
-          else if(motorState == MOTOR_CCW)
-          {
-            stepMotorOneStep(DIR_CCW);
-            if (motorStepCount % 4096 == 0)
-              ledLeftShift(8);
-          }
-
-          motorStepCount++;
-          lastStepTime = HAL_GetTick();
-
-          if(motorStepCount >= stepsPerRevolution)
-          {
-            motorState = MOTOR_STOP;
-            stopStepper();
-          }
-        }
-      }
-//      for(uint8_t i = 0; i < 3; i++)
-//	{
-//	  if(buttonGetPressed(i))
-//	    {
-//	      onButton(i);
-//	    }
-//	}
-      /* USER CODE END WHILE */
-
-      /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
     }
   /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-   */
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -240,23 +241,23 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-    {
-      Error_Handler();
-    }
+  {
+    Error_Handler();
+  }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
+  */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-      |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
-    {
-      Error_Handler();
-    }
+  {
+    Error_Handler();
+  }
 }
 
 /* USER CODE BEGIN 4 */
@@ -264,9 +265,9 @@ void SystemClock_Config(void)
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -279,12 +280,12 @@ void Error_Handler(void)
 }
 #ifdef USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
