@@ -11,6 +11,8 @@ typedef struct
   GPIO_PinState offState;
 }LED_CONTROL;
 
+test
+  
 LED_CONTROL led[8]=
     {
         {GPIOA, GPIO_PIN_5, GPIO_PIN_SET, GPIO_PIN_RESET},
@@ -79,12 +81,11 @@ typedef struct
   GPIO_PinState offState;  // Common-Cathode: GPIO_PIN_RESET, Common-Anode: GPIO_PIN_SET
 } FND_CONTROL;
 
-// 세그먼트 인덱스(A~G, DP)
+// 세그먼트 인덱스(A~G, DP)asdf
 enum { SEG_A=0, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F, SEG_G, SEG_DP, SEG_COUNT=8 };
 
 extern FND_CONTROL fnd[SEG_COUNT];
 
-// 핀 매핑: A,B,C,D,E,F,G,DP 순
 FND_CONTROL fnd[SEG_COUNT] =
 {
   {GPIOA, GPIO_PIN_12, GPIO_PIN_SET, GPIO_PIN_RESET}, // A
