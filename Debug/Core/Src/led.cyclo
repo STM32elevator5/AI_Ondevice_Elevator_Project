@@ -1,0 +1,4 @@
+../Core/Src/led.c:15:6:ledOn	1
+../Core/Src/led.c:19:6:ledOff	1
+../Core/Src/led.c:24:6:ledLeftShift	3
+../Core/Src/led.c:38:6:ledRightShift	3

@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2025 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -24,10 +24,21 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "button.h"
+#include "led.h"
+#include "fnd.h"
+#include "stepper.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+
+typedef enum {
+    MOTOR_STOP,
+    MOTOR_CW,
+    MOTOR_CCW
+} MotorState;
 
 /* USER CODE END PTD */
 
@@ -45,11 +56,57 @@
 
 /* USER CODE BEGIN PV */
 
+uint8_t currentFloor = 0;
+MotorState motorState = MOTOR_STOP; // 모터 멈추도록 지정
+uint16_t motorStepCount = 0;
+uint32_t lastStepTime = 0;
+const uint16_t stepsPerRevolution = 4096; //
+const uint32_t stepDelay = 1;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+
+uint32_t millis()
+{
+  return HAL_GetTick();
+}
+
+//static inline void onButton(uint8_t floor)
+//{
+//  switch (floor) {
+//    case 0:
+////      if(nextFloor > currentFloor)
+////	{
+////	  // 위로 올라가는 이벤트
+////	  currentFloor = nextFloor;
+////	}
+////      else if(nextFloor < currentFloor){
+////	  // 내려가는 이벤트
+////      }
+////      ledOn(8);
+////      ledLeftShift(8);
+////      FND_ShowDigit(1);
+//      motorState = MOTOR_CW;
+//      motorStepCount = 0;
+//      lastStepTime = HAL_GetTick();
+//      break;
+//    case 1:
+////      ledRightShift(0);
+////      FND_ShowDigit(2);
+//      motorState = MOTOR_CCW;
+//      motorStepCount = 0;
+//      lastStepTime = HAL_GetTick();
+//      break;
+//    case 2:
+////      FND_ShowDigit(3);
+//      motorState = MOTOR_STOP;
+//      stopStepper();
+//      break;
+//  }
+//}
 
 /* USER CODE END PFP */
 
@@ -59,9 +116,9 @@ void SystemClock_Config(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
 
@@ -95,31 +152,85 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
-    /* USER CODE END WHILE */
+    {
+      if(buttonGetPressed(0))
+      {
+          motorState = MOTOR_CW;
+          motorStepCount = 0;
+          lastStepTime = HAL_GetTick();
+      }
+      else if(buttonGetPressed(1))
+      {
+          motorState = MOTOR_CCW;
+          motorStepCount = 0;
+          lastStepTime = HAL_GetTick();
+      }
+      else if(buttonGetPressed(2))
+      {
+          motorState = MOTOR_STOP;
+          stopStepper();
+      }
 
-    /* USER CODE BEGIN 3 */
-  }
+      // 논블로킹 모터 스텝 처리
+      if(motorState != MOTOR_STOP)
+      {
+        if(HAL_GetTick() - lastStepTime >= stepDelay)
+        {
+          if(motorState == MOTOR_CW)
+          {
+            stepMotorOneStep(DIR_CW);
+            if (motorStepCount % 4096 == 0)
+              ledRightShift(0);
+          }
+
+          else if(motorState == MOTOR_CCW)
+          {
+            stepMotorOneStep(DIR_CCW);
+            if (motorStepCount % 4096 == 0)
+              ledLeftShift(8);
+          }
+
+          motorStepCount++;
+          lastStepTime = HAL_GetTick();
+
+          if(motorStepCount >= stepsPerRevolution)
+          {
+            motorState = MOTOR_STOP;
+            stopStepper();
+          }
+        }
+      }
+//      for(uint8_t i = 0; i < 3; i++)
+//	{
+//	  if(buttonGetPressed(i))
+//	    {
+//	      onButton(i);
+//	    }
+//	}
+      /* USER CODE END WHILE */
+
+      /* USER CODE BEGIN 3 */
+    }
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -129,23 +240,23 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
+    {
+      Error_Handler();
+    }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
+   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+      |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
+    {
+      Error_Handler();
+    }
 }
 
 /* USER CODE BEGIN 4 */
@@ -153,27 +264,27 @@ void SystemClock_Config(void)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
-  {
-  }
+    {
+    }
   /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
