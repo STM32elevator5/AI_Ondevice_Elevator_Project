@@ -14,7 +14,7 @@ FND_CONTROL fndSeg[7]=
 uint8_t fndData[3] = {
     0x06, // 1
     0x5b, // 2
-    0x4f, // 3
+    0x40, // -
 };
 
 static void seg_write(int idx, uint8_t on){

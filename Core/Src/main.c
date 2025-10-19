@@ -18,27 +18,19 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "button.h"
-#include "led.h"
-#include "fnd.h"
-#include "stepper.h"
+#include "elevator.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
-typedef enum {
-  MOTOR_STOP,
-  MOTOR_CW,
-  MOTOR_CCW
-} MotorState;
 
 /* USER CODE END PTD */
 
@@ -56,12 +48,7 @@ typedef enum {
 
 /* USER CODE BEGIN PV */
 
-uint8_t currentFloor = 0;
-MotorState motorState = MOTOR_STOP; // 모터 멈추도록 지정
-uint16_t motorStepCount = 0;
-uint32_t lastStepTime = 0;
-const uint16_t stepsPerRevolution = 4096; //
-const uint32_t stepDelay = 1;
+uint8_t rxData2[100] = "WARNING!!";
 
 /* USER CODE END PV */
 
@@ -69,90 +56,19 @@ const uint32_t stepDelay = 1;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  switch(GPIO_Pin){
-    case GPIO_PIN_5:  // PC5
-      // PC5 처리
-      break;
-    case GPIO_PIN_6:  // PC6
-      // PC6 처리
-      break;
-    case GPIO_PIN_8:  // PC8
-      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-      break;
-    default:
-      break;
-  }
+  if(huart->Instance == USART2)
+    {
+      HAL_UART_Transmit(&huart1, &rxData2, sizeof(rxData2), 100);
+      HAL_UART_Receive_IT(&huart2, &rxData2, sizeof(rxData2));
+    }
 }
 
-uint32_t millis()
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  return HAL_GetTick();
-}
-
-static inline void onButton(uint8_t floor)
-{
-  switch (floor) {
-    case 0:
-      //      if(nextFloor > currentFloor)
-      //	{
-      //	  // 위로 올라가는 이벤트
-      //	  currentFloor = nextFloor;
-      //	}
-      //      else if(nextFloor < currentFloor){
-      //	  // 내려가는 이벤트
-      //      }
-      //      ledOn(8);
-      //      ledLeftShift(8);
-      //      FND_ShowDigit(1);
-      motorState = MOTOR_CW;
-      motorStepCount = 0;
-      lastStepTime = HAL_GetTick();
-      break;
-    case 1:
-      //      ledRightShift(0);
-      //      FND_ShowDigit(2);
-      motorState = MOTOR_CCW;
-      motorStepCount = 0;
-      lastStepTime = HAL_GetTick();
-      break;
-    case 2:
-      //      FND_ShowDigit(3);
-      motorState = MOTOR_STOP;
-      stopStepper();
-      break;
-  }
-}
-
-static inline void processMotorTick(uint32_t now)
-{
-  if(motorState == MOTOR_STOP) return;
-  if(now - lastStepTime < stepDelay) return;
-
-  if(motorState == MOTOR_CW) {
-      stepMotorOneStep(DIR_CW);
-  } else { // MOTOR_CCW
-      stepMotorOneStep(DIR_CCW);
-  }
-
-  motorStepCount++;                    // ← 스텝 후 증가(0에서 즉시 %0 되는 문제 방지)
-
-  if((motorStepCount % stepsPerRevolution) == 0) {
-      if(motorState == MOTOR_CW) {
-	  ledRightShift(0);
-	  FND_ShowDigit(2);
-      } else {
-	  ledLeftShift(8);
-	  FND_ShowDigit(3);
-      }
-  }
-
-  lastStepTime = now;
-
-  if(motorStepCount >= stepsPerRevolution) {
-      motorState = MOTOR_STOP;
-      stopStepper();
+  if (htim->Instance == TIM10) {
+      Elevator_On1msTick();   // 1ms마다 버튼/모터/LED/포토센서 폴링
   }
 }
 
@@ -193,7 +109,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
+
+  Elevator_Init_1ms(&htim10);
 
   /* USER CODE END 2 */
 
@@ -201,13 +120,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
     {
-      for(uint8_t i=0; i<3; ++i) {
-	  if(buttonGetPressed(i)) onButton(i);
-      }
-
-      // 모터 논블로킹 스텝
-      uint32_t now = HAL_GetTick();
-      processMotorTick(now);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
