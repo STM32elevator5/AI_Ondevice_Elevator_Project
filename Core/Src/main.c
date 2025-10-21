@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "tim.h"
-#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -48,22 +47,11 @@
 
 /* USER CODE BEGIN PV */
 
-uint8_t rxData2[100] = "WARNING!!";
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if(huart->Instance == USART2)
-    {
-      HAL_UART_Transmit(&huart1, &rxData2, sizeof(rxData2), 100);
-      HAL_UART_Receive_IT(&huart2, &rxData2, sizeof(rxData2));
-    }
-}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -108,11 +96,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART2_UART_Init();
   MX_TIM10_Init();
+  MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
 
-  Elevator_Init_1ms(&htim10);
+  elevatorInit(&htim10);
+  HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1);
 
   /* USER CODE END 2 */
 

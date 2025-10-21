@@ -1,7 +1,7 @@
 #ifndef INC_STEPPER_H_
 #define INC_STEPPER_H_
 
-#include "main.h"
+#include "stm32f4xx_hal.h"
 
 #define STEPS_PER_REVOLATION    4096
 #define DIR_CW                    0   //시계방향

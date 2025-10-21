@@ -1,0 +1,6 @@
+../Core/Src/elevator.c:18:20:LED_WriteOneHot	3
+../Core/Src/elevator.c:35:20:stopAndBlink	1
+../Core/Src/elevator.c:46:20:seenFloor	2
+../Core/Src/elevator.c:53:20:startTowardTarget	3
+../Core/Src/elevator.c:69:6:Elevator_Init_1ms	1
+../Core/Src/elevator.c:88:6:Elevator_On1msTick	28

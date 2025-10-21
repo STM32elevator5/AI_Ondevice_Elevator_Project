@@ -11,9 +11,10 @@ FND_CONTROL fndSeg[7]=
 	{GPIOB, GPIO_PIN_14, GPIO_PIN_SET, GPIO_PIN_RESET}, // g
     };
 
-uint8_t fndData[3] = {
+uint8_t fndData[4] = {
     0x06, // 1
     0x5b, // 2
+    0x4f,  // 3
     0x40, // -
 };
 
@@ -32,9 +33,10 @@ void FND_WriteMask(uint8_t mask){
 
 void FND_ShowDigit(uint8_t digit){
   switch(digit){
-    case 1: FND_WriteMask(fndData[0]); break;
-    case 2: FND_WriteMask(fndData[1]); break;
-    case 3: FND_WriteMask(fndData[2]); break;
+    case 1: FND_WriteMask(fndData[0]); break; // 1층
+    case 2: FND_WriteMask(fndData[1]); break; // 2
+    case 3: FND_WriteMask(fndData[2]); break; // 3
+    case 4: FND_WriteMask(fndData[3]); break; // 정지
     default: FND_AllOff(); break;
   }
 }

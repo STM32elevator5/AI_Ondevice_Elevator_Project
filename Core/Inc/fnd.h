@@ -1,7 +1,7 @@
 #ifndef INC_FND_H_
 #define INC_FND_H_
 
-#include "main.h"
+#include "stm32f4xx_hal.h"
 
 typedef struct
 {

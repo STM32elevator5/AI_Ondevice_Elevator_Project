@@ -1,7 +1,7 @@
 #ifndef INC_LED_H_
 #define INC_LED_H_
 
-#include "main.h"
+#include "stm32f4xx_hal.h"
 
 typedef struct
 {
@@ -11,10 +11,7 @@ typedef struct
   GPIO_PinState offState;
 }LED_CONTROL;
 
-
 void ledOn(uint8_t num);
 void ledOff(uint8_t num);
 
-void ledLeftShift(uint8_t num);
-void ledRightShift(uint8_t num);
 #endif /* INC_LED_H_ */
