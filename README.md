@@ -1,6 +1,29 @@
 # AI_Ondevice_Elevator_Project
 AI 온디바이스 5조 STM32와 peripheral을 활용한 엘레베이터 시스템 만들기
 
+## 프로젝트 디렉토리 구조
+```
+Core/
+├─ Inc/
+│  ├─ button.h
+│  ├─ buzzer.h
+│  ├─ elevator.h
+│  ├─ fnd.h
+│  ├─ led.h
+│  ├─ main.h
+│  ├─ servo.h
+│  └─ stepper.h
+└─ Src/
+   ├─ button.c
+   ├─ buzzer.c
+   ├─ elevator.c
+   ├─ fnd.c
+   ├─ led.c
+   ├─ main.c
+   ├─ servo.c
+   └─ stepper.c
+```
+
 ## LED 구조
 ```
 typedef struct
