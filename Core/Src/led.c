@@ -16,7 +16,29 @@ void ledOn(uint8_t num)
 {
   HAL_GPIO_WritePin(led[num].port, led[num].pinNumber, led[num].onState);
 }
+
 void ledOff(uint8_t num)
 {
   HAL_GPIO_WritePin(led[num].port, led[num].pinNumber, led[num].offState);
+}
+
+void ledAllOff(void)
+{
+  for (uint8_t i = 0; i < 8; i++) ledOff(i);
+}
+
+void ledShiftOn(int16_t position)
+{
+  for (uint8_t i = 0; i < 8; i++) {
+    if (i == (uint8_t)position) ledOn(i);
+    else ledOff(i);
+  }
+}
+
+void ledBlinkByPhase(uint8_t phase)
+{
+  for (uint8_t i = 0; i < 8; i++) {
+    if (phase) ledOn(i);
+    else ledOff(i);
+  }
 }

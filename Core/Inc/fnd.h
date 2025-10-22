@@ -11,9 +11,9 @@ typedef struct
   GPIO_PinState offState;
 }FND_CONTROL;
 
-void FND_AllOff(void);
-void FND_WriteMask(uint8_t mask);     // bit0=a ... bit6=g
-void FND_ShowDigit(uint8_t digit);    // 1,2,3만 표시
+void fndAllOff(void);
+void fndWriteMask(uint8_t mask);     // bit0=a ... bit6=g
+void fndShowDigit(uint8_t digit);    // 1,2,3만 표시
 
 
 #endif /* INC_FND_H_ */

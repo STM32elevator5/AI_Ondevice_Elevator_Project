@@ -18,25 +18,25 @@ uint8_t fndData[4] = {
     0x40, // -
 };
 
-static void seg_write(int idx, uint8_t on){
+static void segWrite(int idx, uint8_t on){
   HAL_GPIO_WritePin(fndSeg[idx].port, fndSeg[idx].pinNumber,
 		    on ? fndSeg[idx].onState : fndSeg[idx].offState);
 }
 
-void FND_AllOff(void){
+void fndAllOff(void){
   for(int i = 0 ; i < 7 ; i++) seg_write(i, 0);
 }
 
-void FND_WriteMask(uint8_t mask){
+void fndWriteMask(uint8_t mask){
   for(int i = 0 ; i < 7 ; i++) seg_write(i, (mask >> i) & 0x1);
 }
 
-void FND_ShowDigit(uint8_t digit){
+void fndShowDigit(uint8_t digit){
   switch(digit){
-    case 1: FND_WriteMask(fndData[0]); break; // 1층
-    case 2: FND_WriteMask(fndData[1]); break; // 2
-    case 3: FND_WriteMask(fndData[2]); break; // 3
-    case 4: FND_WriteMask(fndData[3]); break; // 정지
+    case 1: fndWriteMask(fndData[0]); break; // 1층
+    case 2: fndWriteMask(fndData[1]); break; // 2
+    case 3: fndWriteMask(fndData[2]); break; // 3
+    case 4: fndWriteMask(fndData[3]); break; // 정지
     default: FND_AllOff(); break;
   }
 }

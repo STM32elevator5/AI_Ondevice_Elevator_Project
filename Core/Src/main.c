@@ -56,7 +56,7 @@ void SystemClock_Config(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM10) {
-      Elevator_On1msTick();   // 1ms마다 버튼/모터/LED/포토센서 폴링
+      startingElevatorSystem();   // 1ms마다 버튼/모터/LED/포토센서 폴링
   }
 }
 

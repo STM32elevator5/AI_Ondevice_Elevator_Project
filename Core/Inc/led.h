@@ -13,5 +13,8 @@ typedef struct
 
 void ledOn(uint8_t num);
 void ledOff(uint8_t num);
+void ledAllOff(void);
+void ledShiftOn(int16_t position);
+void ledBlinkByPhase(uint8_t phase);
 
 #endif /* INC_LED_H_ */
