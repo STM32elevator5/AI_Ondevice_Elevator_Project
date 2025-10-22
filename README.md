@@ -2,7 +2,7 @@
 AI 온디바이스 5조 STM32와 peripheral을 활용한 엘레베이터 시스템 만들기
 
 ## :star2::star2:프로젝트 결과:star2::star2:
-:point_right:[유튜브 영상](https://www.youtube.com/watch?v=ElRo6nXT7hM)
+:metal:[유튜브 영상](https://www.youtube.com/watch?v=ElRo6nXT7hM)  :v:[노션 링크](https://www.notion.so/28e10d3ee5448030ae75f64f8a7df167)
 
 ## 프로젝트 디렉토리 구조
 
