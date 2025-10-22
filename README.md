@@ -6,10 +6,10 @@ AI 온디바이스 5조 STM32와 peripheral을 활용한 엘레베이터 시스�
 - :v:[노션 링크](https://www.notion.so/28e10d3ee5448030ae75f64f8a7df167)
 
 ## :airplane::airplane:프로젝트 설정:airplane::airplane:
-- :boat:[cn7]("./img/cn7.png")
-- :speedboat:[cn10]("./img/cn10.png")
-- :ship:[ioc]("./img/ioc.png")
-- :anchor:[workflow]("./img/workflow.png")
+- :boat:[cn7](img/cn7.png)
+- :speedboat:[cn10](img/cn10.png)
+- :ship:[ioc](img/ioc.png)
+- :anchor:[workflow](img/workflow.png)
 
 ## 프로젝트 디렉토리 구조
 ```
