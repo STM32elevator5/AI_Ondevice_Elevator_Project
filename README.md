@@ -3,7 +3,6 @@ AI 온디바이스 5조 STM32와 peripheral을 활용한 엘레베이터 시스�
 
 ## 프로젝트 디렉토리 구조
 
-test
 ```
 Core/
 ├─ Inc/

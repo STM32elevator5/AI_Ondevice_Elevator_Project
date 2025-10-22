@@ -24,11 +24,11 @@ static void segWrite(int idx, uint8_t on){
 }
 
 void fndAllOff(void){
-  for(int i = 0 ; i < 7 ; i++) seg_write(i, 0);
+  for(int i = 0 ; i < 7 ; i++) segWrite(i, 0);
 }
 
 void fndWriteMask(uint8_t mask){
-  for(int i = 0 ; i < 7 ; i++) seg_write(i, (mask >> i) & 0x1);
+  for(int i = 0 ; i < 7 ; i++) segWrite(i, (mask >> i) & 0x1);
 }
 
 void fndShowDigit(uint8_t digit){
@@ -37,6 +37,6 @@ void fndShowDigit(uint8_t digit){
     case 2: fndWriteMask(fndData[1]); break; // 2
     case 3: fndWriteMask(fndData[2]); break; // 3
     case 4: fndWriteMask(fndData[3]); break; // 정지
-    default: FND_AllOff(); break;
+    default: fndAllOff(); break;
   }
 }
