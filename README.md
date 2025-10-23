@@ -3,7 +3,7 @@ AI 온디바이스 5조 STM32와 peripheral을 활용한 엘레베이터 시스�
 
 ## :star2::star2:프로젝트 결과:star2::star2:
 - :metal:[편집된 유튜브 영상](https://www.youtube.com/watch?v=ElRo6nXT7hM)
-- :squirrel:[모든기능 유튜브 영상](https://www.youtube.com/shorts/Tphf4RL0Ij0)
+- :clapper:[모든기능 유튜브 영상](https://www.youtube.com/shorts/Tphf4RL0Ij0)
 - :v:[노션 링크](https://www.notion.so/28e10d3ee5448030ae75f64f8a7df167)
 
 ## :airplane::airplane:프로젝트 설정:airplane::airplane:
